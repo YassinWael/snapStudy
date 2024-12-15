@@ -2,6 +2,7 @@
 
 
 {% block content %}
+    <button id="random-theme-button" onclick="ChangeTheme('deep-purple-theme')">Dark Mode</button>
     <form action="" method="POST">
 
         <h1 style="text-align: center;">Flashcards Generator</h1>
@@ -21,6 +22,22 @@
             <button type="submit">Submit</button>
         </div>
     </form>
+
+<script>
+    function ChangeTheme(theme) {
+        themes = ["default-theme","dark-blue-theme", "deep-purple-theme","dark-forest-theme","dark-crimson-theme","dark-teal-theme"]
+        html = document.querySelector("html")
+        const currentTheme = html.classList[0]
+        themes.forEach(theme => html.classList.remove(theme))
+        
+        themes.splice(themes.indexOf(currentTheme), 1) // make sure the current theme is not in the list
+        console.log(themes,currentTheme)
+        const randomTheme = themes[Math.floor(Math.random() * themes.length)]
+        themes.push(currentTheme) // add the current theme back to the list
+        html.classList.add(randomTheme)
+       
+    }
+</script>
 
 {% endblock %}
 
