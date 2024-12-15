@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+    <!-- Reset css -->
+    <style>*,::after,::before{box-sizing:border-box}ol[class],ul[class]{padding:0;list-style:none}blockquote,body,dd,dl,figcaption,figure,h1,h2,h3,h4,li,ol[class],p,ul[class]{margin:0}body{min-height:100vh;scroll-behavior:smooth;text-rendering:optimizeSpeed;line-height:1.5;}a:not([class]){text-decoration-skip-ink:auto}img{max-width:100%;display:block}article>*+*{margin-top:1em}button,input,select,textarea{font:inherit}@media (prefers-reduced-motion:reduce){*{animation-duration:0s!important;animation-iteration-count:1!important;transition-duration:0s!important;scroll-behavior:auto!important}}</style> 
+    <!-- Reset css -->
+    
+    <title>BarberShop</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="stylesheet" href="/static/styles/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    {% block head %}
+    {% endblock %}
+    
+</head>
+
+
+
+
+
+<body>
+    <!-- mobile nav -->
+    <nav id="mobile-nav">
+        <a class="nav-brand" onclick="window.location.href='/'">
+            <img src="/static/logo.webp" onclick="window.location.href='/'" width="50px" height="50px" alt="Logo">
+            <p>SnappyCards</p>
+        </a>
+        
+        <ul id="mobile-menu" class="hidden">
+            <a class="animate__animated animate__zoomIn  nav-brand" onclick="window.location.href='/'">
+                <img src="/static/logo.webp" onclick="window.location.href='/'" width="50px" height="50px" alt="Logo">
+                <p>SnappyCards</p>
+            </a>
+
+            <li class="animate__animated animate__fadeInLeft"><a href="#home">Home</a></li>
+            <li class="animate__animated animate__fadeInLeft"><a href="#about">About</a></li>
+            <li class="animate__animated animate__fadeInLeft"><a href="#services">Services</a></li>
+            <li class="animate__animated animate__fadeInLeft"><a href="#contact">Contact</a></li>
+    
+        </ul>
+
+        <button id="mobile-menu-button" style="z-index: 2;">
+            <img src="/static/menu.svg" width="50px" height="50px" id="open-image" alt="menu">
+            <img src="/static/Close.svg" width="50px" height="50px" alt="close" id="close-image" style="display: none;">
+        </button>
+    </nav>
+    <!-- mobile nav -->
+
+    <nav id="desktop-nav">
+        <a class="nav-brand" onclick="window.location.href='/'">
+            <img src="/static/logo.webp" width="80px" height="80px" alt="Logo">
+            <p><span>Snappy</span>Cards</p>
+        </a>
+
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact</a></li>
+    
+        </ul>
+    </nav>
+    
+    {% block content %}
+    
+    {% endblock %}
+</body>
+
+<script defer>
+    menuButton = document.getElementById("mobile-menu-button");
+    openImage = document.getElementById("open-image");
+    closeImage = document.getElementById("close-image");
+    menuButton.addEventListener("click", function(e) {
+        mobileMenu = document.getElementById("mobile-menu")
+        if (mobileMenu.classList.contains("hidden")) {
+            mobileMenu.classList.remove("hidden");
+            mobileMenu.classList.add("show");
+            closeImage.style.display = "inline-block"
+            openImage.style.display = "none"
+
+        }
+        else {
+            mobileMenu.classList.remove("show");
+            mobileMenu.classList.add("hidden");
+            openImage.style.display = "inline-block";
+            closeImage.style.display = "none";
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="flashcards-container">
+    <h1>Flashcards Generated in {{ exec_time }} seconds</h1>
+    {% for flashcard in flashcards %}
+        <div class="flashcard">
+            <p class="flashcard-question">{{ flashcard['question'] }}</p>
+            <p class="flashcard-answer">{{ flashcard['answer'] }}</p>
+            <hr>
+        </div>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

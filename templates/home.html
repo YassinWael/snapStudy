@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+    <form action="" method="POST">
+
+        <h1 style="text-align: center;">Flashcards Generator</h1>
+        <div class="form-container">
+
+            <textarea name="input" id="" cols="30" rows="10" id="" placeholder="Enter your lesson.">Genmoji, a standout feature of Apple Intelligence in iOS 18.2, allows users to create custom emojis using text prompts or images[1][2]. This AI-powered tool generates personalized emoji options based on user descriptions, enabling the creation of unique characters like "a dog drinking coffee" or emojis resembling friends and family members[3][4]. Genmoji integrates seamlessly into the Messages app and other supported applications, appearing as inline emoji characters[3].
+    
+                To use Genmoji, users can access it through the emoji keyboard in Messages, type a description, and choose from multiple AI-generated options[5][6]. The feature also allows for customization with accessories and themes, making emojis more personal and expressive[7]. Genmoji can be saved, shared as stickers, or used as reactions, offering a new level of creativity in digital communication[3][4].</textarea>
+            <div class="flashcard-controls">
+
+                <input type="number" required min="1" max="10" name="number_of_flashcards" placeholder="How Many Flashcards? (more flashcards = more time)" id="">    
+                <h2>Difficulty</h2>
+                <input type="range"  name="difficulty" min="1" max="5" id="difficulty" value="1" oninput="this.nextElementSibling.value = this.value;">
+                <output id="difficultyValue">1</output>
+            </div>
+    
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+
+{% endblock %}
+
+<!-- Wireframe for Flashcard Generation Page (Using Your Color Palette)
+
+/* HEADER */
+--------------------------------------------
+| Snappy Flashcards          [Dark Mode 🌙] |
+| (Text: "Snappy Flashcards" in white)      |
+--------------------------------------------
+
+/* MAIN CONTENT */
+Background: `--midnight-green-2`
+
+/* INPUT SECTION */
+--------------------------------------------
+| Title: "Generate Flashcards" (Text: `--raw-umber`)  |
+| --------------------------------------------------  |
+| [ Large Input Box ] (Background: `--space-cadet`,   |
+|                     Text: white)                   |
+|                                                    |
+| [ Difficulty Dropdown ] [ Number Slider ]          |
+| (Dropdown BG: `--raw-umber`, Slider Track: `--madder`, |
+|  Text: white)                                      |
+--------------------------------------------
+
+/* GENERATE BUTTON */
+------------------------------------------------------
+| [ Create Flashcards! ] (Button BG: `--madder`, Text: white) |
+------------------------------------------------------
+
+/* OUTPUT SECTION */
+Background: `--midnight-green-2`
+------------------------------------------------------
+| Title: "Your Flashcards" (Text: `--raw-umber`)      |
+| --------------------------------------------------  |
+| [ Question 1 Front ]    [ Question 2 Front ]       |
+| (BG: `--space-cadet`,    (BG: `--space-cadet`,     |
+| Text: white)             Text: white)             |
+|                                                      |
+| [ Question 3 Front ]    [ Question 4 Front ]       |
+| (Same styling for all cards)                       |
+|                                                      |
+------------------------------------------------------
+
+/* FOOTER */
+------------------------------------------------------
+| Snappy Flashcards © 2024      [Export: JSON | CSV | Printable] [Social Links] |
+| (Text: white, hover effects: background changes to `--madder`)               |
+------------------------------------------------------ -->
