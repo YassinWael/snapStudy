@@ -1,5 +1,9 @@
 <!DOCTYPE html>
+{% if theme %}
+<html class="{{theme}}" lang="en">
+{% else %}
 <html class="default-theme" lang="en">
+{% endif %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +12,7 @@
     <style>*,::after,::before{box-sizing:border-box}ol[class],ul[class]{padding:0;list-style:none}blockquote,body,dd,dl,figcaption,figure,h1,h2,h3,h4,li,ol[class],p,ul[class]{margin:0}body{min-height:100vh;scroll-behavior:smooth;text-rendering:optimizeSpeed;line-height:1.5;}a:not([class]){text-decoration-skip-ink:auto}img{max-width:100%;display:block}article>*+*{margin-top:1em}button,input,select,textarea{font:inherit}@media (prefers-reduced-motion:reduce){*{animation-duration:0s!important;animation-iteration-count:1!important;transition-duration:0s!important;scroll-behavior:auto!important}}</style> 
     <!-- Reset css -->
     
-    <title>BarberShop</title>
+    <title>SnappyCards</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="/static/styles/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -22,7 +26,10 @@
 
 
 
-<body> <!-- TODO: add a theme selector instead of the navbar -->
+<body>
+    <button id="random-theme-button" onclick="ChangeTheme('random')">Random Theme</button>
+    
+    <!-- TODO: add a theme selector instead of the navbar -->
     <!-- mobile nav -->
     <nav id="mobile-nav">
         <a class="nav-brand" onclick="window.location.href='/'">
@@ -55,14 +62,19 @@
             <img src="/static/logo.webp" width="80px" height="80px" alt="Logo">
             <p><span>Snappy</span>Cards</p>
         </a>
-
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#services">Services</a></li>
-            <li><a href="#contact">Contact</a></li>
-    
-        </ul>
+        <select name="theme" id="theme" title="Change Theme" onchange="ChangeTheme(this.value)">
+            {% if theme %}
+            <option value="{{theme}}">{{ theme | replace("-"," ") | replace("theme","") | capitalize }}</option>
+            {% endif %}
+            <option value="default-theme">Default</option>
+            <option value="dark-blue-theme">Dark Blue</option>
+            <option value="deep-purple-theme">Deep Purple</option>
+            <option value="dark-forest-theme">Dark Forest</option>
+            <option value="dark-crimson-theme">Dark Crimson</option>
+            <option value="dark-teal-theme">Dark Teal</option>
+            <option value="light-pastel-theme">Light Pastel</option>
+            <option value="light-mint-theme">Light Mint</option>
+        </select>
     </nav>
     
     {% block content %}
@@ -90,5 +102,42 @@
             closeImage.style.display = "none";
         }
     })
+
+
+    function ChangeTheme(theme) {
+        html = document.querySelector("html")
+        themes = ["default-theme","dark-blue-theme", "deep-purple-theme","dark-forest-theme","dark-crimson-theme","dark-teal-theme","light-pastel-theme","light-mint-theme"]
+        const currentTheme = html.classList[0]
+        const selectElement = document.getElementById("theme")
+        themes.forEach(theme => html.classList.remove(theme))
+        if (theme === 'random') {
+
+            themes.splice(themes.indexOf(currentTheme), 1) // make sure the current theme is not in the list
+            console.log(themes,currentTheme)
+            const randomTheme = themes[Math.floor(Math.random() * themes.length)]
+            themes.push(currentTheme) // add the current theme back to the list
+            html.classList.add(randomTheme)
+            selectElement.value = randomTheme
+            theme = randomTheme;
+            console.log(`from random theme ${theme}`)
+        }
+        
+        else {
+            console.log(`else statement and the theme is ${theme}`)
+            html.classList.add(theme)
+        }
+        fetch("/theme",{
+            method: "POST",
+            body: theme,
+            contentType: "text/plain"
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data)
+        })
+        .catch(error => {
+            console.error("Error:", error)
+        })
+    }
 </script>
 </html>

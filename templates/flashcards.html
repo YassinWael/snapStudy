@@ -2,16 +2,77 @@
 
 {% block content %}
 
+<h1 style="margin-left: 8px;">Flashcards Generated in {{ exec_time }} seconds</h1>
 <div class="flashcards-container">
-    <h1>Flashcards Generated in {{ exec_time }} seconds</h1>
     {% for flashcard in flashcards %}
-        <div class="flashcard">
-            <p class="flashcard-question">{{ flashcard['question'] }}</p>
-            <p class="flashcard-answer">{{ flashcard['answer'] }}</p>
-            <hr>
+        {% set flashcardId = flashcard['id'] | tojson %}
+        <div class="flashcard animate__animated" id="{{ flashcard['id'] }}" onclick='flipFlashcard({{flashcardId}})'>
+            <div class="flashcard-front animate__animated " >
+                <h2>{{ flashcard['question'] }}</h2>
+            </div>
+
+            <div class="flashcard-back  animate__animated hidden removed" >
+                <h2>{{ flashcard['answer'] }}</h2>
+            </div>
         </div>
-    {% endfor %}
+   {% endfor %}
 </div>
+
+
+<style>
+    .removed {
+        display: none;
+    }
+</style>
+
+<script>
+    
+    function flipFlashcard(flashcardId) {
+        const flashcard = document.getElementById(flashcardId);
+        
+        const flashcardFront = flashcard.getElementsByClassName("flashcard-front")[0];
+        const flashcardBack = flashcard.getElementsByClassName("flashcard-back")[0];
+        console.log("Flipped... supposeduly?")
+        flashcardBack.classList.remove("removed");
+
+        // the class .hidden does nothing and is simply there to indicate which face of the card is shown.
+        if (flashcardBack.classList.contains("hidden")) {
+            // removes the hidden class from the back and adds it to the front.
+            flashcardBack.classList.remove("hidden");
+            flashcardFront.classList.add("hidden");
+            // delete any previous classes for either front/back before adding anything else.
+            flashcardBack.classList.remove("animate__backOutLeft");
+            flashcardBack.classList.remove("animate__backInRight");
+
+            flashcardFront.classList.remove("animate__backOutLeft");
+            flashcardFront.classList.remove("animate__backInRight");
+
+            // animate the exit of the question.
+            flashcardFront.classList.add("animate__backOutLeft");
+            // animate the entry of the answer.
+            flashcardBack.classList.add("animate__backInRight");
+
+        }
+
+        else {
+            // removes the hidden class from the front and adds it to the back.
+            flashcardFront.classList.remove("hidden");
+            flashcardBack.classList.add("hidden");
+
+            // delete any previous classes for either front/back before adding anything else.
+            flashcardBack.classList.remove("animate__backOutLeft");
+            flashcardBack.classList.remove("animate__backInRight");
+
+            flashcardFront.classList.remove("animate__backOutLeft");
+            flashcardFront.classList.remove("animate__backInRight");
+
+            // animate the exit of the answer.    
+            flashcardBack.classList.add("animate__backOutLeft");
+            // animate the entry of the question.                    
+            flashcardFront.classList.add("animate__backInRight");
+        }
+    }
+</script>
 
 
 {% endblock %}

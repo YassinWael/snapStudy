@@ -106,6 +106,42 @@
     --nav-bg: rgba(13, 42, 42, 0.95);
 }
 
+.light-pastel-theme {
+    --midnight-green: #f5e6e8;
+    --midnight-green-2: #d5e1df;
+    --space-cadet: #e6b2c6;
+    --raw-umber: #92374d;
+    --madder: #8e4162;
+    --primary-color: #4a4e69;
+    --border-radius:8px;
+    --border-test:2px solid #e76f51;
+    --border-test-2:2px solid #2a9d8f;
+    --border-test-3:2px solid #e9c46a;
+    --font-size:22px;
+    --bg-gradient-1: #f5e6e8;
+    --bg-gradient-2: #d5e1df;
+    --card-bg: rgba(74, 78, 105, 0.08);
+    --nav-bg: rgba(245, 230, 232, 0.95);
+}
+
+.light-mint-theme {
+    --midnight-green: #e3f2e5;
+    --midnight-green-2: #d4ebd7;
+    --space-cadet: #b4d7b9;
+    --raw-umber: #4a7856;
+    --madder: #3b6b4c;
+    --primary-color: #2f3e46;
+    --border-radius:8px;
+    --border-test:2px solid #84a98c;
+    --border-test-2:2px solid #52796f;
+    --border-test-3:2px solid #cad2c5;
+    --font-size:22px;
+    --bg-gradient-1: #e3f2e5;
+    --bg-gradient-2: #d4ebd7;
+    --card-bg: rgba(47, 62, 70, 0.08);
+    --nav-bg: rgba(227, 242, 229, 0.95);
+}
+
 
 /* poppins-regular - latin */
 @font-face {
@@ -123,6 +159,11 @@
     font-weight: 600;
     src: url('../fonts/poppins-v21-latin-600italic.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
   }
+html {
+    position: relative;
+}
+
+
 
 h1,h2 {
     color: var(--raw-umber);
@@ -153,7 +194,8 @@ body {
 nav {
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 1.5rem;
     align-items: center;
     background: var(--nav-bg);
     padding: 10px;
@@ -185,8 +227,42 @@ nav button {
     background-color: inherit;
     border: none;
 }
+html:after {
+    content: "";
+    background: linear-gradient(135deg, var(--bg-gradient-1) 0%, var(--bg-gradient-2) 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 100;
+    transform: scale(0);
+    transition: transform 0.3s ease;
+    transform-origin: top left;
+    animation-duration: 1.2s;
+    animation-timing-function: ease;
+    animation-iteration-count: 1;
+}
+
+#theme {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 4px;
+    color: black;
+    font-family: 'Poppins';
+    font-size: calc(var(--font-size) - .5rem);
+}
 
 
+@keyframes change-theme {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
 nav p {
     position: relative;
     color: var(--primary-color);
@@ -275,6 +351,15 @@ nav p {
     color: var(--primary-color);
     font-family: 'Poppins';
     font-size: var(--font-size);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease;
+    z-index: 1000;
+
+}
+#random-theme-button:hover {
+    transform: scale(1.05);
+    border-color: var(--madder);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+
 }
 
 .form-container {
@@ -421,4 +506,35 @@ button[type="submit"]:hover::after {
         margin-bottom: 4rem;
     }
    
+}
+
+body, h1, h2, a, nav, .form-container, textarea, input, button, *, html {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+
+
+/* ========================================================================================= */
+/* ========================================================================================= */
+/* ================================== Flashcards.html =================================== */
+/* ========================================================================================= */
+/* ========================================================================================= */
+
+.flashcards-container {
+    display: flex;
+}
+
+.flashcard {
+    width: 400px;
+    height: 400px;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.flashcard * {
+    transition: all 0.3s ease;
 }

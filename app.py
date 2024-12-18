@@ -2,8 +2,11 @@ import cohere
 from icecream import ic
 import json
 import time
-from flask import Flask, redirect, render_template,app,request
+import os
+from flask import Flask, redirect, render_template,app,request,session
+import uuid
 co = cohere.ClientV2(api_key="ZIQIaTaVvw42UxMCPKnKzK19lcyxlk0Z0zRewScU")
+exec_time = ""
 system_messages = [ #in increasing difficulty
     "You are an API for generating flashcards from text. Your output should ONLY be in JSON format, containing exactly flashcard.number flashcards. Each flashcard must include a 'question' and an 'answer'. Example output: [ {'question': 'What is 2+2?', 'answer': '4'}, {'question': 'Name the process by which plants make food.', 'answer': 'Photosynthesis'}, {'question': 'What is the capital of France?', 'answer': 'Paris'}]",
 
@@ -18,6 +21,14 @@ system_messages = [ #in increasing difficulty
 
 
 app = Flask(__name__)
+app.secret_key = os.getenv("appKey")
+
+
+def generate_id():
+    """Generate a simple UUID."""
+    return str(uuid.uuid4())
+
+# Example usage
 
 
 
@@ -78,23 +89,43 @@ def make_flashcards(text,difficulty,number_of_flashcards):
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+    theme = session.get("theme")
+    
+
+
     if request.method == "POST":
         text = request.form.get("input")
         difficulty = request.form.get("difficulty")
         number_of_flashcards = request.form.get("number_of_flashcards")
         global flashcards
         flashcards = make_flashcards(text,difficulty = int(difficulty),number_of_flashcards = int(number_of_flashcards))
+        for flashcard in flashcards:
+            flashcard["id"] = generate_id()
+        ic(flashcards)
         return redirect("/flashcards")
-    return render_template("home.html")
+    return render_template("home.html",theme = theme) if theme else render_template("home.html")
 
 
 
 
 @app.route("/flashcards",methods=["GET", "POST"])
 def flashcards():
-    return render_template("flashcards.html",flashcards = flashcards,exec_time = exec_time)
+    theme = session.get("theme")
+    if not exec_time:
+        return redirect("/")
+  
+    return render_template("flashcards.html",flashcards = flashcards,exec_time = exec_time,theme = theme) if theme else render_template("flashcards.html",flashcards = flashcards,exec_time = exec_time)
 
 
+@app.route("/theme",methods=["POST"])
+def theme():
+    request_data = str(request.data)
+    ic(request_data)
+    theme = request_data.replace("'","").strip('b')
+    ic(theme)
+    session["theme"] = theme
+    print(f"set the new theme to {session['theme']}.")
+    return "success"
 
 if __name__ == "__main__":
     app.run(debug=True,port=8080,host="0.0.0.0")
