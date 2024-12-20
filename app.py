@@ -55,6 +55,7 @@ def increment_times_generated():
         device_id = ObjectId(device_id)
 
         times_generated_user = devices_collection.find_one({"_id":device_id})['device']['times_generated']
+        times_generated_user += 1
         total_flashcards_generated_user = devices_collection.find_one({"_id":device_id})['device']['total_flashcards_generated']
         total_flashcards_generated_user += int(number_of_flashcards)
 
