@@ -24,3 +24,4 @@ virtualenv==20.25.1
 webencodings==0.5.1
 Werkzeug==3.0.1
 pytz==2024.1
+cohere==5.13.3
