@@ -53,19 +53,21 @@ def increment_times_generated():
         json_data = json.load(f)
 
     device_id = session.get("_id")
-    device_id = ObjectId(device_id)
+    if device_id:
+        device_id = ObjectId(device_id)
+
+        times_generated_user = devices_collection.find_one({"_id":device_id})['device']['times_generated']
+        total_flashcards_generated_user = devices_collection.find_one({"_id":device_id})['device']['total_flashcards_generated']
+        total_flashcards_generated_user += int(number_of_flashcards)
+
+        devices_collection.update_one({"_id":device_id},{"$set":{"device.times_generated":times_generated_user,"device.total_flashcards_generated":total_flashcards_generated_user}})
+    
     times_generated = json_data[2][0]['times_generated']
+    times_generated += 1
     total_flashcards_generated = json_data[2][0]['total_flashcards_generated']
 
-    times_generated += 1
-    times_generated_user = devices_collection.find_one({"_id":device_id})['device']['times_generated']
-    times_generated_user += 1
 
     total_flashcards_generated += int(number_of_flashcards)
-    total_flashcards_generated_user = devices_collection.find_one({"_id":device_id})['device']['total_flashcards_generated']
-    total_flashcards_generated_user += int(number_of_flashcards)
-
-    devices_collection.update_one({"_id":device_id},{"$set":{"device.times_generated":times_generated_user,"device.total_flashcards_generated":total_flashcards_generated_user}})
     
     json_data[2][0]['times_generated'] = times_generated
     json_data[2][0]['total_flashcards_generated'] = total_flashcards_generated
@@ -111,6 +113,8 @@ def make_flashcards(text,difficulty,number_of_flashcards):
             }
         ],
     )   
+       
+
         flashcards = json.loads(res.message.content[0].text)
         end_time = time.time()
         global exec_time
@@ -133,7 +137,14 @@ def make_flashcards(text,difficulty,number_of_flashcards):
 def home():
     theme = session.get("theme")
     random_fact = random.choice(random_facts)
-    ic(session.get("_id"))
+    device_id = session.get("_id")
+    if device_id:
+        device_id = ObjectId(device_id)
+        device = devices_collection.find_one({"_id":device_id})
+        if not device:
+            session.clear()
+            return redirect("/")
+   
 
     if request.method == "POST":
         text = request.form.get("input")
@@ -147,8 +158,12 @@ def home():
 
         device_id = session.get("_id")
         print(device_id)
-        update = devices_collection.update_one({"_id":ObjectId(device_id)},{"$push":{"device.flashcards":flashcards}})
-        ic(update)
+        try:
+            update = devices_collection.update_one({"_id": ObjectId(device_id)}, {"$push": {"device.flashcards": flashcards}})
+            ic(update)
+        except Exception as e:
+            print(f"Error updating device flashcards: {e}")
+            return redirect("/")
 
         for flashcard in flashcards:
             flashcard["id"] = generate_id()
@@ -238,6 +253,7 @@ def collect_device_info():
    
     try:
         session['_id'] = str(existing_device['_id'])
+        return redirect("/")
     except Exception as e:
         print(f"Error found: {e}")
         ic( f"{existing_device}")
