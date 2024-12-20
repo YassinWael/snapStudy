@@ -49,9 +49,7 @@ def time_now():
 
 
 def increment_times_generated():
-    with open("app.json","r") as f:
-        json_data = json.load(f)
-
+   
     device_id = session.get("_id")
     if device_id:
         device_id = ObjectId(device_id)
@@ -62,17 +60,7 @@ def increment_times_generated():
 
         devices_collection.update_one({"_id":device_id},{"$set":{"device.times_generated":times_generated_user,"device.total_flashcards_generated":total_flashcards_generated_user}})
     
-    times_generated = json_data[2][0]['times_generated']
-    times_generated += 1
-    total_flashcards_generated = json_data[2][0]['total_flashcards_generated']
-
-
-    total_flashcards_generated += int(number_of_flashcards)
-    
-    json_data[2][0]['times_generated'] = times_generated
-    json_data[2][0]['total_flashcards_generated'] = total_flashcards_generated
-    with open("app.json", "w") as f:
-        json.dump(json_data, f, indent=4)
+   
 
 
 
