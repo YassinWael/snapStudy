@@ -193,7 +193,7 @@ def collect_device_info():
     cpu_cores = data.get('cpu_cores')
     memory = data.get('memory')
     time_zone = data.get('timezone')
-    user_ip = headers['X-Forwarded-For'] if headers['Host'] == "whatevertheipisgoingtobe" else request.remote_addr
+    user_ip = headers['X-Forwarded-For'] if headers['Host'] == "snappycards.up.railway.app" else request.remote_addr
     
     devices = list(devices_collection.find({}))
     ic(list(devices))
