@@ -576,7 +576,7 @@ body, h1, h2, a, nav, .form-container, textarea, input, button, *, html {
     flex: 0 0 100%;
     scroll-snap-align: center;
     transition: transform 0.3s ease;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 .flashcard * {
