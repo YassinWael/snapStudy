@@ -1,21 +1,29 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<div class="main">
 
-<h1 style="margin-left: 8px;">Flashcards Generated in {{ exec_time }} seconds</h1>
-<div class="flashcards-container">
-    {% for flashcard in flashcards %}
-        {% set flashcardId = flashcard['id'] | tojson %}
-        <div class="flashcard animate__animated" id="{{ flashcard['id'] }}" onclick='flipFlashcard({{flashcardId}})'>
-            <div class="flashcard-front animate__animated " >
-                <h2>{{ flashcard['question'] }}</h2>
-            </div>
-
-            <div class="flashcard-back  animate__animated hidden removed" >
-                <h2>{{ flashcard['answer'] }}</h2>
-            </div>
+    <h1 style="margin-left: 8px;">Flashcards Generated in {{ exec_time }} seconds</h1>
+    <h1 style="margin-left: 8px;">Difficulty Level: {{ difficulty }}</h1>
+    <hr style="height: 1px; background-color: rgba(255, 252, 252, 0.2); border:none; width:80%;">
+    <h1 style="margin-left: 8px; font-size: 30px;" id="flashcard-number">1 out of {{ number_of_flashcards }}</h1>
+    <div class="flashcards-wrapper">
+        <button id="prev-btn" onclick="navigateFlashcards(-1)">Previous</button>
+        <div class="flashcards-container">
+            {% for flashcard in flashcards %}
+                {% set flashcardId = flashcard['id'] | tojson %}
+                <div class="flashcard animate__animated" id="{{ flashcard['id'] }}" onclick='flipFlashcard({{flashcardId}})'>
+                    <div class="flashcard-front animate__animated">
+                        <h2 id="question">{{ flashcard['question'] }}</h2>
+                    </div>
+                    <div class="flashcard-back animate__animated hidden removed">
+                        <h2 id="answer">{{ flashcard['answer'] }}</h2>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-   {% endfor %}
+        <button id="next-btn" onclick="navigateFlashcards(1)">Next</button>
+    </div>
 </div>
 
 
@@ -26,49 +34,85 @@
 </style>
 
 <script>
-    
-    function flipFlashcard(flashcardId) {
-        const flashcard = document.getElementById(flashcardId);
-        
+    let currentIndex = 0;
+    const flashcardNumber = document.getElementById("flashcard-number");
+
+    function navigateFlashcards(direction) {
+        const flashcards = document.querySelectorAll('.flashcard');
+        const totalFlashcards = flashcards.length;
+
+        // Hide the current flashcard
+        flashcards[currentIndex].style.display = 'none';
+
+        // Reset the current flashcard to show the question side
+        resetFlashcard(flashcards[currentIndex]);
+
+        // Update the index
+        currentIndex = (currentIndex + direction + totalFlashcards) % totalFlashcards;
+        flashcardNumber.textContent = `${currentIndex + 1} out of ${totalFlashcards}`;
+
+        // Show the new flashcard
+        flashcards[currentIndex].style.display = 'block';
+    }
+
+    function resetFlashcard(flashcard) {
         const flashcardFront = flashcard.getElementsByClassName("flashcard-front")[0];
         const flashcardBack = flashcard.getElementsByClassName("flashcard-back")[0];
-        console.log("Flipped... supposeduly?")
+
+        // Ensure the front is visible and the back is hidden
+        flashcardFront.classList.remove("hidden");
+        flashcardBack.classList.add("hidden");
+
+        // Remove any animation classes
+        flashcardFront.classList.remove("animate__backOutLeft", "animate__backInRight");
+        flashcardBack.classList.remove("animate__backOutLeft", "animate__backInRight");
+
+        flashcardBack.classList.add("removed");
+
+    }
+
+    // Initialize by showing the first flashcard
+    document.addEventListener('DOMContentLoaded', () => {
+        const flashcards = document.querySelectorAll('.flashcard');
+        flashcards.forEach((card, index) => {
+            card.style.display = index === 0 ? 'block' : 'none';
+        });
+    });
+
+    function flipFlashcard(flashcardId) {
+        // Get the flashcard element by ID
+        const flashcard = document.getElementById(flashcardId);
+        
+        // Get front and back elements of the flashcard
+        const flashcardFront = flashcard.getElementsByClassName("flashcard-front")[0];
+        const flashcardBack = flashcard.getElementsByClassName("flashcard-back")[0];
+        
+        // remove the removed class (it was only there for once to make sure the website loads with the answer hidden)
         flashcardBack.classList.remove("removed");
 
-        // the class .hidden does nothing and is simply there to indicate which face of the card is shown.
         if (flashcardBack.classList.contains("hidden")) {
-            // removes the hidden class from the back and adds it to the front.
+            // Show back, hide front
             flashcardBack.classList.remove("hidden");
             flashcardFront.classList.add("hidden");
-            // delete any previous classes for either front/back before adding anything else.
-            flashcardBack.classList.remove("animate__backOutLeft");
-            flashcardBack.classList.remove("animate__backInRight");
+            
+            // Clear any existing animations
+            flashcardBack.classList.remove("animate__backOutLeft", "animate__backInRight");
+            flashcardFront.classList.remove("animate__backOutLeft", "animate__backInRight");
 
-            flashcardFront.classList.remove("animate__backOutLeft");
-            flashcardFront.classList.remove("animate__backInRight");
-
-            // animate the exit of the question.
+            // Animate front out, back in
             flashcardFront.classList.add("animate__backOutLeft");
-            // animate the entry of the answer.
             flashcardBack.classList.add("animate__backInRight");
-
-        }
-
-        else {
-            // removes the hidden class from the front and adds it to the back.
+        } else {
+            // Show front, hide back
             flashcardFront.classList.remove("hidden");
             flashcardBack.classList.add("hidden");
 
-            // delete any previous classes for either front/back before adding anything else.
-            flashcardBack.classList.remove("animate__backOutLeft");
-            flashcardBack.classList.remove("animate__backInRight");
+            // Clear any existing animations
+            flashcardBack.classList.remove("animate__backOutLeft", "animate__backInRight");
+            flashcardFront.classList.remove("animate__backOutLeft", "animate__backInRight");
 
-            flashcardFront.classList.remove("animate__backOutLeft");
-            flashcardFront.classList.remove("animate__backInRight");
-
-            // animate the exit of the answer.    
+            // Animate back out, front in
             flashcardBack.classList.add("animate__backOutLeft");
-            // animate the entry of the question.                    
             flashcardFront.classList.add("animate__backInRight");
         }
     }

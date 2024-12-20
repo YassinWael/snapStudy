@@ -27,7 +27,6 @@
 
 
 <body>
-    <button id="random-theme-button" onclick="ChangeTheme('random')">Random Theme</button>
     
     <!-- TODO: add a theme selector instead of the navbar -->
     <!-- mobile nav -->
@@ -38,26 +37,39 @@
         </a>
         
         <ul id="mobile-menu" class="hidden">
+            <button id="mobile-random-theme-button" class="animate__animated animate__zoomIn" onclick="ChangeTheme('random')">Random Theme</button>
             <a class="animate__animated animate__zoomIn  nav-brand" onclick="window.location.href='/'">
                 <img src="/static/logo.webp" onclick="window.location.href='/'" width="50px" height="50px" alt="Logo">
                 <p>SnappyCards</p>
             </a>
 
-            <li class="animate__animated animate__fadeInLeft"><a href="#home">Home</a></li>
-            <li class="animate__animated animate__fadeInLeft"><a href="#about">About</a></li>
-            <li class="animate__animated animate__fadeInLeft"><a href="#services">Services</a></li>
-            <li class="animate__animated animate__fadeInLeft"><a href="#contact">Contact</a></li>
-    
+            <select name="theme" id="mobile-theme" class="animate__animated animate__zoomIn"  title="Change Theme" onchange="ChangeTheme(this.value)">
+            
+                {% if theme %}
+                <option value="{{theme}}">{{ theme | replace("-"," ") | replace("theme","") | capitalize }}</option>
+                {% endif %}
+                <option value="default-theme">Default</option>
+                <option value="dark-blue-theme">Dark Blue</option>
+                <option value="deep-purple-theme">Deep Purple</option>
+                <option value="dark-forest-theme">Dark Forest</option>
+                <option value="dark-crimson-theme">Dark Crimson</option>
+                <option value="dark-teal-theme">Dark Teal</option>
+                <option value="light-pastel-theme">Light Pastel</option>
+                <option value="light-mint-theme">Light Mint</option>
+            </select>
+            
+            
         </ul>
-
+        
         <button id="mobile-menu-button" style="z-index: 2;">
             <img src="/static/menu.svg" width="50px" height="50px" id="open-image" alt="menu">
-            <img src="/static/Close.svg" width="50px" height="50px" alt="close" id="close-image" style="display: none;">
+            <img src="/static/Close.svg" width="50px" height="50px" alt="close" id="close-image" style="display: none; position: absolute; top: 20px; right: 20px;">
         </button>
     </nav>
     <!-- mobile nav -->
-
+    
     <nav id="desktop-nav">
+        <button id="random-theme-button" onclick="ChangeTheme('random')">Random Theme</button>
         <a class="nav-brand" onclick="window.location.href='/'">
             <img src="/static/logo.webp" width="80px" height="80px" alt="Logo">
             <p><span>Snappy</span>Cards</p>
@@ -108,7 +120,7 @@
         html = document.querySelector("html")
         themes = ["default-theme","dark-blue-theme", "deep-purple-theme","dark-forest-theme","dark-crimson-theme","dark-teal-theme","light-pastel-theme","light-mint-theme"]
         const currentTheme = html.classList[0]
-        const selectElement = document.getElementById("theme")
+        const selectElement = document.getElementsByName("theme")
         themes.forEach(theme => html.classList.remove(theme))
         if (theme === 'random') {
 
@@ -117,7 +129,7 @@
             const randomTheme = themes[Math.floor(Math.random() * themes.length)]
             themes.push(currentTheme) // add the current theme back to the list
             html.classList.add(randomTheme)
-            selectElement.value = randomTheme
+            selectElement.forEach(element => element.value = randomTheme)
             theme = randomTheme;
             console.log(`from random theme ${theme}`)
         }

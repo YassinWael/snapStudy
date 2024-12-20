@@ -244,7 +244,9 @@ html:after {
     animation-iteration-count: 1;
 }
 
-#theme {
+
+/* Theme Selector */
+#theme,#mobile-theme {
     background: rgba(255, 255, 255, 0.1);
     border: none;
     border-radius: var(--border-radius);
@@ -254,6 +256,37 @@ html:after {
     font-size: calc(var(--font-size) - .5rem);
 }
 
+#random-theme-button,#mobile-random-theme-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    border: none;
+    padding: 1rem;
+    color: var(--primary-color);
+    font-family: 'Poppins';
+    font-size: var(--font-size);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease;
+    z-index: 1000;
+
+}
+#random-theme-button:hover {
+    transform: scale(1.05);
+    border-color: var(--madder);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+
+}
+#mobile-random-theme-button,#mobile-theme {
+    position: relative;
+    font-size: var(--font-size);
+    margin: 0;
+    top: 0;
+    right: 0;
+   
+}
+
+/* Theme Selector */
 
 @keyframes change-theme {
     0% {
@@ -307,7 +340,7 @@ nav p {
     position: fixed;
     display: none;
     z-index: 1000;
-    
+    justify-content: space-evenly;
 }
 
 #mobile-menu {
@@ -316,7 +349,8 @@ nav p {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: rgba(241, 231, 214, 1);
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
     transform: translateY(-100%);
     display: none;
     height: 100%;
@@ -340,27 +374,7 @@ nav p {
     transform: translateY(0) !important;
 }
 
-#random-theme-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
-    border: none;
-    padding: 1rem;
-    color: var(--primary-color);
-    font-family: 'Poppins';
-    font-size: var(--font-size);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease;
-    z-index: 1000;
 
-}
-#random-theme-button:hover {
-    transform: scale(1.05);
-    border-color: var(--madder);
-    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
-
-}
 
 .form-container {
     position: relative;
@@ -506,10 +520,17 @@ button[type="submit"]:hover::after {
         margin-bottom: 4rem;
     }
    
+    .flashcards-wrapper {
+        flex-direction: column;
+    }
+    .main {
+
+        padding-top: 10rem;
+    }
 }
 
 body, h1, h2, a, nav, .form-container, textarea, input, button, *, html {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    transition: background-color 0.6s ease, color 0.6s ease, border-color 0.6s ease;
 }
 
 
@@ -520,21 +541,70 @@ body, h1, h2, a, nav, .form-container, textarea, input, button, *, html {
 /* ========================================================================================= */
 /* ========================================================================================= */
 
+.main {
+    min-height: 100vh;
+}
+
+
+.flashcards-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    width: 100%;
+    
+}
+
 .flashcards-container {
     display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    width: 80%;
 }
 
 .flashcard {
     width: 400px;
-    height: 400px;
-    padding: 2rem;
+    height: auto;
+    min-height: 400px;
+    position: relative;
+    padding: 10px;
     border-radius: var(--border-radius);
     background: var(--card-bg);
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+    transition: transform 0.3s ease;
+    overflow: hidden;
 }
 
 .flashcard * {
     transition: all 0.3s ease;
+}
+
+.flashcard-front,.flashcard-back {
+    transition: all 0.3s ease;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+#prev-btn, #next-btn {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: .2rem;
+    font-size: var(--font-size);
+    font-family: 'Poppins';
+    font-weight: normal;
+    margin: 1rem;
+}
+
+#answer {
+    color: var(--primary-color);
 }

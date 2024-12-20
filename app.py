@@ -95,9 +95,12 @@ def home():
 
     if request.method == "POST":
         text = request.form.get("input")
+        global difficulty
+        global number_of_flashcards #so i can use it in the flashcards page
+        global flashcards
+
         difficulty = request.form.get("difficulty")
         number_of_flashcards = request.form.get("number_of_flashcards")
-        global flashcards
         flashcards = make_flashcards(text,difficulty = int(difficulty),number_of_flashcards = int(number_of_flashcards))
         for flashcard in flashcards:
             flashcard["id"] = generate_id()
@@ -114,7 +117,7 @@ def flashcards():
     if not exec_time:
         return redirect("/")
   
-    return render_template("flashcards.html",flashcards = flashcards,exec_time = exec_time,theme = theme) if theme else render_template("flashcards.html",flashcards = flashcards,exec_time = exec_time)
+    return render_template("flashcards.html",flashcards = flashcards,exec_time = exec_time,theme = theme,difficulty = difficulty,number_of_flashcards = number_of_flashcards) if theme else render_template("flashcards.html",flashcards = flashcards,exec_time = exec_time,difficulty = difficulty,number_of_flashcards = number_of_flashcards)
 
 
 @app.route("/theme",methods=["POST"])
