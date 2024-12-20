@@ -39,6 +39,25 @@
     document.querySelector('form').addEventListener('submit', function(e) {
         document.querySelector('.loading-screen').classList.remove('hidden');
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const device = {
+            screen_resolution: `${window.screen.width}x${window.screen.height}`,
+            browser: navigator.userAgent,
+            platform: navigator.platform,
+            cpu_cores: navigator.hardwareConcurrency || 'unknown',
+            memory: navigator.deviceMemory || 'unknown',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        };
+        console.log('User Information:', device);
+        fetch('/collect_device_info', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(device)
+        });
+    });
 </script>
 
 {% endblock %}
