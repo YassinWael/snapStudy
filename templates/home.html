@@ -38,6 +38,10 @@
 <script>
     document.querySelector('form').addEventListener('submit', function(e) {
         document.querySelector('.loading-screen').classList.remove('hidden');
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     });
 
     
