@@ -2,15 +2,21 @@
 
 
 {% block content %}
+
     <div class="loading-screen hidden" >
         <img src="/static/giphy.webp" alt="loading" id="loading-gif">
-        <h1>Loading...</h1>
+        {% if name %}
+            <h1>Hiii, {{name}}! I'm creating your flashcards, please wait...</h1>
+        {% else %}
+            <h1>Loading...</h1>
+        {% endif %}
+
         <h2 id="random-fact">{{ random_fact }}</h2>
     </div>
 
 
-    <form action="" method="POST">
-
+    <form action="" method="POST" id="main-form">
+       
         <h1 style="text-align: center;">Flashcards Generator</h1>
         <div class="form-container">
 

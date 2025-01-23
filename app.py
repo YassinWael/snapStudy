@@ -53,14 +53,15 @@ def increment_times_generated():
     device_id = session.get("_id")
     if device_id:
         device_id = ObjectId(device_id)
-
+        ic("Device id was found")
         times_generated_user = devices_collection.find_one({"_id":device_id})['device']['times_generated']
         times_generated_user += 1
         total_flashcards_generated_user = devices_collection.find_one({"_id":device_id})['device']['total_flashcards_generated']
         total_flashcards_generated_user += int(number_of_flashcards)
 
         devices_collection.update_one({"_id":device_id},{"$set":{"device.times_generated":times_generated_user,"device.total_flashcards_generated":total_flashcards_generated_user}})
-    
+    else:
+        ic("no device id")
    
 
 
@@ -125,9 +126,12 @@ def make_flashcards(text,difficulty,number_of_flashcards):
 @app.route("/", methods=["GET", "POST"])
 def home():
     theme = session.get("theme")
-    random_fact = random.choice(random_facts)
     device_id = session.get("_id")
+    name = session.get("name")
+    ic(name)
+    random_fact = random.choice(random_facts)
     if device_id:
+        ic(f"Device id found, {device_id}")
         device_id = ObjectId(device_id)
         device = devices_collection.find_one({"_id":device_id})
         if not device:
@@ -159,6 +163,9 @@ def home():
     
         increment_times_generated()
         return redirect("/flashcards")
+    if name:
+        return render_template("home.html",theme = theme,random_fact = random_fact, name = name) if theme else render_template("home.html",random_fact = random_fact, name=name)
+
     return render_template("home.html",theme = theme,random_fact = random_fact) if theme else render_template("home.html",random_fact = random_fact)
 
 
@@ -189,8 +196,8 @@ def theme():
 def collect_device_info():
     data = request.get_json()
     headers = dict(request.headers)
-    ic("DEVICE INFO RECIEVED")
-    # Extract and print each data point
+    ic("DEVICE INFO RECEIVED")
+    
     screen_res = data.get('screen_resolution')
     browser = data.get('browser')
     platform = data.get('platform')
@@ -198,59 +205,79 @@ def collect_device_info():
     memory = data.get('memory')
     time_zone = data.get('timezone')
     user_ip = headers['X-Forwarded-For'] if headers['Host'] == "snappycards.up.railway.app" else request.remote_addr
-    
-    devices = list(devices_collection.find({}))
-    ic(list(devices))
-   
-   
-
-    device_query = {
-        "device.screen_res": screen_res,
-        "device.browser": browser,
-        "device.platform": platform,
-        "device.cpu_cores": cpu_cores,
-        "device.memory": memory,
-        "device.user_ip": user_ip
-    }
-
+    name = session.get("name")
+    if name:
+        device_query = {
+            "device.screen_res": screen_res,
+            "device.browser": browser,
+            "device.platform": platform,
+            "device.cpu_cores": cpu_cores,
+            "device.memory": memory,
+            "device.user_ip": user_ip,
+            "device.name":name
+        }
+    else: 
+         device_query = {
+            "device.screen_res": screen_res,
+            "device.browser": browser,
+            "device.platform": platform,
+            "device.cpu_cores": cpu_cores,
+            "device.memory": memory,
+            "device.user_ip": user_ip
+        }
+        
     existing_device = devices_collection.find_one(device_query)
+    
 
     if existing_device:
         devices_collection.update_one(device_query,{"$inc":{"device.times_visited":1}})
         devices_collection.update_one(device_query,{"$set":{"device.last_time_visited":time_now()}})
-    else: 
-        device = {
-        "flashcards":[],
-        "screen_res":screen_res,
-        "browser":browser,
-        "platform":platform,
-        "cpu_cores":cpu_cores,
-        "memory":memory,
-        "user_ip":user_ip,
-        "times_visited":1,
-        "first_time_visited":time_now(),
-        "last_time_visited":time_now(),
-        "time_zone":time_zone,
-        "times_generated":0,
-        "total_flashcards_generated":0
-
-    }
-        
-        devices_collection.insert_one({"device":device})
-        existing_device = devices_collection.find_one(device_query)
-
-   
-    try:
         session['_id'] = str(existing_device['_id'])
-        return redirect("/")
+        if existing_device['device']['name']:
+            return jsonify({"status": "success", "isNewUser": False}), 200
+        else:
+            return jsonify({"status": "success", "isNewUser": True}), 200
+
+
+    else:
+        device = {
+            "flashcards":[],
+            "screen_res":screen_res,
+            "browser":browser,
+            "platform":platform,
+            "cpu_cores":cpu_cores,
+            "memory":memory,
+            "user_ip":user_ip,
+            "times_visited":1,
+            "first_time_visited":time_now(),
+            "last_time_visited":time_now(),
+            "time_zone":time_zone,
+            "times_generated":0,
+            "total_flashcards_generated":0,
+            "name": None
+        }
+        
+        result = devices_collection.insert_one({"device":device})
+        session['_id'] = str(result.inserted_id)
+        return jsonify({"status": "success", "isNewUser": True}), 200
+
+@app.route('/save_username', methods=['POST'])
+def save_username():
+    try:
+        name = request.json.get('name')
+        device_id = session.get('_id')
+        session["name"] = name
+
+        
+        if device_id and name:
+            devices_collection.update_one(
+                {"_id": ObjectId(device_id)},
+                {"$set": {"device.name": name}}
+            )
+            return jsonify({"status": "success"}), 200
+        return jsonify({"status": "error", "message": "Missing name or device ID"}), 400
     except Exception as e:
-        print(f"Error found: {e}")
-        ic( f"{existing_device}")
-    
-    
-    ic("DEVICE INFO SAVED SUCCESSFULLY")
- 
-    return jsonify({"status": "success"}), 200
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True,port=8080,host="0.0.0.0")

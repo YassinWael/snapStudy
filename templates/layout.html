@@ -37,6 +37,13 @@
         </a>
         
         <ul id="mobile-menu" class="hidden">
+            {% if name %}
+            <h1>Hiiii, {{ name }}</h1>
+            
+            {% endif %}
+
+
+
             <button id="mobile-random-theme-button" class="animate__animated animate__zoomIn" onclick="ChangeTheme('random')">Random Theme</button>
             <a class="animate__animated animate__zoomIn  nav-brand" onclick="window.location.href='/'">
                 <img src="/static/logo.webp" onclick="window.location.href='/'" width="50px" height="50px" alt="Logo">
@@ -92,6 +99,62 @@
     {% block content %}
     
     {% endblock %}
+
+    <div id="welcome-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Welcome to SnappyCards, You seem new here!</h2>
+            <p>Please enter your name:</p>
+            <input type="text" id="username-input" placeholder="Your name">
+            <button onclick="saveUsername()">Continue</button>
+        </div>
+    </div>
+
+    <style>
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1001;
+    }
+
+    .modal-content {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        text-align: center;
+    }
+
+    .modal-content input {
+        width: 100%;
+        padding: 0.5rem;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--border-radius);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--primary-color);
+    }
+
+    .modal-content button {
+        background: var(--madder);
+        color: var(--primary-color);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+    </style>
 </body>
 
 <script defer>
@@ -161,14 +224,46 @@
             memory: navigator.deviceMemory || 'unknown',
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
         };
-        console.log('User Information:', device);
+        
         fetch('/collect_device_info', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(device)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.isNewUser) {
+                document.getElementById('welcome-modal').classList.remove('hidden');
+            }
         });
     });
+
+    function saveUsername() {
+        const name = document.getElementById('username-input').value.trim();
+        if (!name) {
+            alert('Please enter your name');
+            return;
+        }
+        
+        fetch('/save_username', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: name })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('welcome-modal').classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('There was an error saving your name. Please try again.');
+        });
+    }
 </script>
 </html>
